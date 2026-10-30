@@ -1,6 +1,6 @@
 # Video to Text Workflow
 
-一个面向抖音、B 站、小红书等视频分享链接的本地整理流程：解析直链、下载媒体、先用 Faster-Whisper 在本地转写，再生成干净 Markdown 和来源记录；需要的话一键复制到你的知识库目录（Obsidian、Logseq、普通文件夹都行，**不装 Obsidian 也能用**）。
+一个面向抖音、B 站、小红书等视频分享链接的本地整理流程：解析直链、下载媒体、先用 Faster-Whisper 在本地转写，再生成干净 Markdown 和来源记录。
 
 ## 流程
 
