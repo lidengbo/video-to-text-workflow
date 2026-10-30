@@ -15,6 +15,10 @@
 .EXAMPLE
     .\scripts\run.ps1 "https://..." -NoTranscribe
     只下载，不转写
+
+.EXAMPLE
+    .\scripts\run.ps1 "https://..." -Vault "D:\我的笔记\视频解析"
+    转完顺便把已有的 .md/.vtt 同步到知识库目录
 #>
 [CmdletBinding()]
 param(
@@ -27,6 +31,7 @@ param(
     [string]$Model = 'medium',
     [string]$Format = 'vtt,txt',
     [string]$Language = 'zh',
+    [string]$Vault = '',
 
     [switch]$KeepVideo,
     [switch]$NoTranscribe
@@ -133,4 +138,15 @@ if ($vtt) {
     Write-Host "提示词见 README 的「从 VTT 到 Markdown 笔记」一节。" -ForegroundColor Yellow
 } else {
     Write-Host "没找到 .vtt，可能转写未产生字幕（纯音乐或无人声）。" -ForegroundColor Yellow
+}
+
+# ---------- 5. 可选：同步到知识库 ----------
+if ($Vault) {
+    Write-Host ""
+    $publish = Join-Path $PSScriptRoot 'publish.ps1'
+    if (Test-Path $publish) {
+        & $publish -Archive $archiveDir -Vault $Vault
+    } else {
+        Write-Host "[警告] 找不到 publish.ps1，跳过同步" -ForegroundColor Yellow
+    }
 }

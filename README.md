@@ -1,6 +1,6 @@
 # Video to Text Workflow
 
-一个面向抖音、B 站、小红书等视频分享链接的本地整理流程：解析直链、下载媒体、先判断音轨是 BGM 还是人声、必要时使用 Faster-Whisper 转写，再生成干净 Markdown、来源记录、归档资料并同步到 Obsidian。
+一个面向抖音、B 站、小红书等视频分享链接的本地整理流程：解析直链、下载媒体、先用 Faster-Whisper 在本地转写，再生成干净 Markdown 和来源记录；需要的话一键复制到你的知识库目录（Obsidian、Logseq、普通文件夹都行，**不装 Obsidian 也能用**）。
 
 ## 流程
 
@@ -11,7 +11,7 @@
 5. 确认有人声讲解、对白或旁白后，才对完整音轨运行 Faster-Whisper。
 6. 纯 BGM、纯音效或无法确认人声时跳过完整转写，只整理画面、字幕和分享文案。
 7. 生成原始 VTT（如有）、干净稿和 `来源.md`。
-8. 按 `平台-内容编号` 归档，并将整理稿同步到 Obsidian。
+8. 按 `平台-内容编号` 归档；需要时再同步到 Markdown 知识库（可选）。
 
 ## 快速开始（Windows）
 
@@ -49,6 +49,24 @@ winget install yt-dlp.yt-dlp
 
 **默认会删除原视频**（转写成功后），想保留就加 `-KeepVideo`。
 
+### 同步到知识库（可选，不需要 Obsidian）
+
+产物就是普通的 `.md` / `.vtt` 文件，放在 `视频/平台-编号/` 里，用记事本、VS Code、Typora 都能打开。**没有 Obsidian 不影响任何功能。**
+
+想把整理稿收进自己的知识库时，转写时顺带同步：
+
+```powershell
+.\scripts\run.ps1 "<链接>" -Vault "D:\我的笔记\视频解析"
+```
+
+或者整理完（有了 .md）再单独同步一次：
+
+```powershell
+.\scripts\publish.ps1 -Archive ".\视频\抖音-xxxx" -Vault "D:\我的笔记\视频解析"
+```
+
+目标目录下会建一个同名的 `平台-编号` 文件夹，里面是 `.md` 和 `.vtt`。
+
 只想单独用转写那一步时：
 
 ```powershell
@@ -84,6 +102,7 @@ winget install yt-dlp.yt-dlp
 - `scripts/run.ps1`：**推荐入口**。链接/本地文件 → 下载 → 转写，一条命令。
 - `scripts/setup.ps1`：一键准备工具链（查版本、下载、解压、建目录、检查环境）。
 - `scripts/transcribe.ps1`：CPU Faster-Whisper 转写包装脚本，支持多格式、多模型、指定输出目录。
+- `scripts/publish.ps1`：把某个归档目录的 .md/.vtt 复制到你的知识库目录（可选步骤）。
 - `scripts/_dl.cjs`：支持 HTTP/HTTPS 重定向的 Node.js 下载脚本。
 - `scripts/sample_audio.ps1`：抽取开头、中段、结尾音频样本。
 - `templates/`：整理稿和来源记录模板。
@@ -105,7 +124,9 @@ GitHub 访问不通时，手动下载安装包后喂给脚本：
 仍需你自己准备：
 
 - **yt-dlp**：`winget install yt-dlp.yt-dlp`。只用本地文件时可跳过。
-- **知识库目录**：Obsidian 或其他 Markdown 目录，用于同步整理稿。
+- **知识库目录（可选）**：任意 Markdown 目录都行——Obsidian、Logseq，或者干脆一个普通文件夹。**不装 Obsidian 完全不影响使用**，这一步只是把整理稿多复制一份。
+
+> `config.example.json` 只是路径示意，脚本不读取它，参数请走命令行。
 
 工具装在别处时，设置环境变量 `VTT_ROOT` 指向该目录即可，脚本不用改。
 

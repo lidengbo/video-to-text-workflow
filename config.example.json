@@ -1,9 +1,10 @@
 {
+  "_note": "参考用：脚本目前不读取本文件，所有参数请通过命令行传入。路径只是示意。",
   "workspace": "./workspace",
   "inbox": "./workspace/_inbox",
   "archive": "./workspace/视频",
   "output": "./workspace/output",
-  "obsidian": "./obsidian/视频解析",
+  "vault": "./vault/视频解析",
   "ffmpeg": "ffmpeg",
   "ffprobe": "ffprobe",
   "whisper": "faster-whisper-xxl",
