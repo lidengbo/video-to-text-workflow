@@ -11,6 +11,16 @@
 5. 生成 VTT（平台字幕或转写所得）、干净稿和 `来源.md`。
 6. 按 `平台-内容编号` 归档；需要时再同步到 Markdown 知识库（可选）。
 
+## 一键安装（不想敲命令）
+
+1. 在 GitHub 页面点 **Code → Download ZIP**（或 Releases 里的源码包），解压到任意目录
+2. **双击 `安装.bat`**
+3. 等窗口跑完
+
+`安装.bat` 内部调用 `scripts/install.ps1`：下载并解压工具链、检查 ffmpeg、尝试用 winget 装 yt-dlp，最后打印用法。**重复双击是安全的**，已装好的部分会跳过。
+
+首次需下载约 1.4 GB 工具链；第一次转写还要下约 1.5 GB 模型。
+
 ## 快速开始（Windows）
 
 ```powershell
@@ -37,7 +47,7 @@ winget install yt-dlp.yt-dlp
 .\scripts\run.ps1 "https://www.bilibili.com/video/BVxxxxxxxx"
 ```
 
-它会：解析链接拿到「平台 + 编号」→ 下载到 `_inbox/` → 转写到 `视频/<平台>-<编号>/` → 打印 vtt 路径。常用开关：
+它会：解析链接拿到「平台 + 编号」→ **先查平台中文字幕** → 有字幕就直接归档、跳过转写；没字幕才下载到 `_inbox/` 并转写 → 最后打印字幕路径。常用开关：
 
 ```powershell
 .\scripts\run.ps1 "<链接>" -KeepVideo        # 转完保留原视频
@@ -111,6 +121,8 @@ winget install yt-dlp.yt-dlp
 ## 目录
 
 - `SKILL.md`：完整工作流规范（给 Agent 用的）。
+- `安装.bat`：双击运行的一键安装入口（Windows）。
+- `scripts/install.ps1`：安装流程本体，`安装.bat` 调用的就是它。
 - `scripts/run.ps1`：**推荐入口**。链接/本地文件 → 下载 → 转写，一条命令。
 - `scripts/setup.ps1`：一键准备工具链（查版本、下载、解压、建目录、检查环境）。
 - `scripts/transcribe.ps1`：CPU Faster-Whisper 转写包装脚本，支持多格式、多模型、指定输出目录。
