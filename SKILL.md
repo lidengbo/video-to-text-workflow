@@ -73,7 +73,7 @@ faster-whisper-xxl <media-path> `
 
 长视频放到后台运行，并在结束前确认进程已退出、VTT 已生成且时长合理。
 
-也可以使用 `scripts/transcribe.ps1`，它固定使用 CPU，并支持 `-KeepInput` 保留原始媒体。
+也可以使用 `scripts/transcribe.ps1`，它固定使用 CPU，支持 `-Format vtt,txt,srt` 多格式输出，并用 `-KeepVideo`（别名 `-KeepInput`）保留原始媒体。首次使用前先跑一次 `scripts/setup.ps1` 准备工具链。
 
 ### 5. 整理内容
 

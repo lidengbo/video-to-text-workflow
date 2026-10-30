@@ -1,0 +1,19 @@
+# setup.ps1 生成的本地目录，不入库
+_tools/
+视频/
+_inbox/
+output/
+
+# 媒体与字幕产物
+*.mp4
+*.mkv
+*.flv
+*.wav
+*.m4a
+*.vtt
+*.srt
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+desktop.ini

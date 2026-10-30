@@ -13,25 +13,57 @@
 7. 生成原始 VTT（如有）、干净稿和 `来源.md`。
 8. 按 `平台-内容编号` 归档，并将整理稿同步到 Obsidian。
 
+## 快速开始（Windows）
+
+```powershell
+git clone https://github.com/lidengbo/video-to-text-workflow.git
+cd video-to-text-workflow
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
+```
+
+`setup.ps1` 会查询并下载 Faster-Whisper-XXL 的 Windows 包（约 1.4 GB，解压后约 3 GB，内含 ffmpeg），并建好 `_inbox/`、`视频/`、`_tools/models/` 目录。首次转写还会自动下载 medium 模型（约 1.5 GB）。
+
+> 磁盘请**至少预留 5 GB**。本机实测：工具链 + medium 模型合计 **5.82 GB**。
+>
+> 很多 Windows 机器默认执行策略是 `Restricted`，所以要带 `-ExecutionPolicy Bypass`，否则会报“禁止运行脚本”。
+
+装好后把视频丢进 `_inbox`，然后：
+
+```powershell
+.\scripts\transcribe.ps1 ".\_inbox\abc.mp4"                 # 输出 vtt
+.\scripts\transcribe.ps1 ".\_inbox\abc.mp4" -KeepVideo       # 转完保留原视频
+.\scripts\transcribe.ps1 ".\_inbox\abc.mp4" -Format vtt,txt,srt -Model large-v3
+```
+
+**默认会删除原视频**：转写成功后原文件被移除以省磁盘，想保留就加 `-KeepVideo`。
+
 ## 目录
 
 - `SKILL.md`：完整工作流规范。
+- `scripts/setup.ps1`：一键准备工具链（查版本、下载、解压、建目录、检查环境）。
+- `scripts/transcribe.ps1`：CPU Faster-Whisper 转写包装脚本，支持多格式、多模型、指定输出目录。
 - `scripts/_dl.cjs`：支持 HTTP/HTTPS 重定向的 Node.js 下载脚本。
 - `scripts/sample_audio.ps1`：抽取开头、中段、结尾音频样本。
-- `scripts/transcribe.ps1`：CPU Faster-Whisper 转写包装脚本。
 - `templates/`：整理稿和来源记录模板。
 - `config.example.json`：本地路径配置示例。
 
 ## 环境配置
 
-工作流需要用户自行配置：
+`setup.ps1` 负责的部分：
 
-- 平台解析脚本或解析服务。
-- FFmpeg。
-- Faster-Whisper 或兼容的本地语音识别工具。
-- 输出目录和 Obsidian（或其他 Markdown 知识库）目录。
+- Faster-Whisper-XXL（含 ffmpeg）：下载到 `_tools/app/`，整个仓库可整体搬家。
+- 工作目录：`_inbox/`（待处理）、`视频/`（输出）、`_tools/models/`（模型）。
 
-默认建议本地 CPU 推理，不上传音频，不调用外部转写服务。
+仍需你自己准备：
+
+- **链接解析**：从抖音/B 站/小红书的分享链接拿到媒体直链。推荐 `winget install yt-dlp.yt-dlp`；也可用你自己的解析脚本或手工提供直链。
+- **知识库目录**：Obsidian 或其他 Markdown 目录，用于同步整理稿。
+
+工具装在别处时，设置环境变量 `VTT_ROOT` 指向该目录即可，脚本不用改。
+
+默认本地 CPU 推理，不上传音频，不调用外部转写服务。
+
+> 实测参考：medium 模型首次运行要把模型载入内存，一段 3 秒音频总耗时 108 秒，绝大部分是加载时间；批量处理长视频时这部分只付一次。
 
 ## 归档结构
 
