@@ -57,7 +57,7 @@ winget install yt-dlp.yt-dlp
 
 ## 从 VTT 到 Markdown 笔记
 
-脚本在帮到 vtt 就停了：那是**带时间码、无标点的原始字幕**，直接看很费劲。最后一步是把 vtt 交给 AI 整理，或者按 `templates/note.md` 手工写。
+脚本跑到 vtt 就停了：那是**带时间码、无标点的原始字幕**，直接看很费劲。最后一步是把 vtt 交给 AI 整理，或者按 `templates/note.md` 手工写。
 
 把下面这段连同 vtt 内容一起发给 Claude Code / DSH / ChatGPT：
 
