@@ -27,19 +27,61 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 >
 > 很多 Windows 机器默认执行策略是 `Restricted`，所以要带 `-ExecutionPolicy Bypass`，否则会报“禁止运行脚本”。
 
-装好后把视频丢进 `_inbox`，然后：
+装好工具链后，装一个 yt-dlp 用来解析链接（只需一次）：
 
 ```powershell
-.\scripts\transcribe.ps1 ".\_inbox\abc.mp4"                 # 输出 vtt
-.\scripts\transcribe.ps1 ".\_inbox\abc.mp4" -KeepVideo       # 转完保留原视频
+winget install yt-dlp.yt-dlp
+```
+
+然后一条命令跑完整条链路：
+
+```powershell
+.\scripts\run.ps1 "https://www.bilibili.com/video/BVxxxxxxxx"
+```
+
+它会：解析链接拿到「平台 + 编号」→ 下载到 `_inbox/` → 转写到 `视频/<平台>-<编号>/` → 打印 vtt 路径。常用开关：
+
+```powershell
+.\scripts\run.ps1 "<链接>" -KeepVideo        # 转完保留原视频
+.\scripts\run.ps1 "<链接>" -NoTranscribe     # 只下载，不转写
+.\scripts\run.ps1 ".\_inbox\abc.mp4"         # 也可以直接给本地文件
+```
+
+**默认会删除原视频**（转写成功后），想保留就加 `-KeepVideo`。
+
+只想单独用转写那一步时：
+
+```powershell
 .\scripts\transcribe.ps1 ".\_inbox\abc.mp4" -Format vtt,txt,srt -Model large-v3
 ```
 
-**默认会删除原视频**：转写成功后原文件被移除以省磁盘，想保留就加 `-KeepVideo`。
+## 从 VTT 到 Markdown 笔记
+
+脚本在帮到 vtt 就停了：那是**带时间码、无标点的原始字幕**，直接看很费劲。最后一步是把 vtt 交给 AI 整理，或者按 `templates/note.md` 手工写。
+
+把下面这段连同 vtt 内容一起发给 Claude Code / DSH / ChatGPT：
+
+```text
+下面是一段视频的原始字幕（VTT，带时间码）。请整理成 Markdown 笔记：
+
+1. 去掉时间码，合并成通顺的段落，补上标点；不要删掉信息，只做去噪和重组。
+2. 开头写 YAML front matter：title、platform、id、source、date。
+3. 正文按主题分段，每段加小标题。
+4. 结尾加一个「要点速记」表格，和「待核对」清单——把可能识别错的
+   专有名词、数字、产品名单独列出来，标注为需要人工确认。
+5. 不要编造字幕里没有的内容。
+
+【字幕开始】
+（粘贴 vtt 内容）
+【字幕结束】
+```
+
+产出的 `.md` 放回 `视频/<平台>-<编号>/`，和 vtt、来源记录放在一起。
 
 ## 目录
 
-- `SKILL.md`：完整工作流规范。
+- `SKILL.md`：完整工作流规范（给 Agent 用的）。
+- `scripts/run.ps1`：**推荐入口**。链接/本地文件 → 下载 → 转写，一条命令。
 - `scripts/setup.ps1`：一键准备工具链（查版本、下载、解压、建目录、检查环境）。
 - `scripts/transcribe.ps1`：CPU Faster-Whisper 转写包装脚本，支持多格式、多模型、指定输出目录。
 - `scripts/_dl.cjs`：支持 HTTP/HTTPS 重定向的 Node.js 下载脚本。
@@ -54,9 +96,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 - Faster-Whisper-XXL（含 ffmpeg）：下载到 `_tools/app/`，整个仓库可整体搬家。
 - 工作目录：`_inbox/`（待处理）、`视频/`（输出）、`_tools/models/`（模型）。
 
+GitHub 访问不通时，手动下载安装包后喂给脚本：
+
+```powershell
+.\scripts\setup.ps1 -LocalPackage "D:\下载\Faster-Whisper-XXL_r245.4_windows.7z"
+```
+
 仍需你自己准备：
 
-- **链接解析**：从抖音/B 站/小红书的分享链接拿到媒体直链。推荐 `winget install yt-dlp.yt-dlp`；也可用你自己的解析脚本或手工提供直链。
+- **yt-dlp**：`winget install yt-dlp.yt-dlp`。只用本地文件时可跳过。
 - **知识库目录**：Obsidian 或其他 Markdown 目录，用于同步整理稿。
 
 工具装在别处时，设置环境变量 `VTT_ROOT` 指向该目录即可，脚本不用改。

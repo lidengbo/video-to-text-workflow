@@ -55,14 +55,21 @@ Write-Host " 输出到 : $OutputDir"
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host "开始转写（CPU 约 0.75 倍音频时长）..." -ForegroundColor Yellow
 
-$fmtArgs = @()
-foreach ($f in ($Format -split ',')) { $fmtArgs += @('--output_format', $f.Trim()) }
+# --output_format 接受「一次给多个值、空格分隔」，重复传只会保留最后一个。
+# 而且这个参数之后不能再跟音频路径，所以放在命令最后。
+$fmtList = @()
+foreach ($f in ($Format -split ',')) {
+  $f = $f.Trim()
+  if ($f) { $fmtList += $f }
+}
+if ($fmtList.Count -eq 0) { $fmtList = @('vtt') }
 
 $Before = Get-Date
 & $exe $file.FullName `
   --model $Model --model_dir $modelDir `
   --language $Language --device cpu --compute_type $Compute `
-  --output_dir $OutputDir @fmtArgs
+  --output_dir $OutputDir `
+  --output_format @fmtList
 
 $code = $LASTEXITCODE
 $Elapsed = (Get-Date) - $Before

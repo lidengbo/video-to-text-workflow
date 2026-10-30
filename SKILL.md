@@ -75,6 +75,8 @@ faster-whisper-xxl <media-path> `
 
 也可以使用 `scripts/transcribe.ps1`，它固定使用 CPU，支持 `-Format vtt,txt,srt` 多格式输出，并用 `-KeepVideo`（别名 `-KeepInput`）保留原始媒体。首次使用前先跑一次 `scripts/setup.ps1` 准备工具链。
 
+如果需要一条命令走完「链接 → 下载 → 转写」，用 `scripts/run.ps1 "<链接>"`；它按 `平台-编号` 归档到 `视频/` 下。
+
 ### 5. 整理内容
 
 生成 `<id>.md`，建议包含：
