@@ -18,24 +18,8 @@
 
 ## 安装
 
-### 方式 A：双击（推荐给大多数人）
-
 上面的三步就装完了。`安装.bat` 会：下载并解压工具链（含 ffmpeg）→ 检查目录 → 用 winget 装 yt-dlp → 打印用法。
 
-**重复双击是安全的**，已装好的部分自动跳过。
-
-### 方式 B：命令行
-
-想看清楚每一步在干什么，或者要装到自定义位置：
-
-```powershell
-git clone https://github.com/lidengbo/video-to-text-workflow.git
-cd video-to-text-workflow
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
-winget install yt-dlp.yt-dlp
-```
-
-`-ExecutionPolicy Bypass` 是必须的：多数 Windows 机器默认策略是 `Restricted`，直接跑 `.ps1` 会报“禁止运行脚本”。
 
 ### 要下多少东西
 
